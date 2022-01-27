@@ -12,4 +12,6 @@ typedef uint32_t memt_t;
 typedef uint32_t id_t;
 typedef uint64_t addr_t;
 
+void stream2mem(memt_t *arr, hls::stream<memt_t> &in, hls::stream<memt_t> &out);
+
 #endif
