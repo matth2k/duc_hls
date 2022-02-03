@@ -4,7 +4,7 @@
 #define BASE_ADDR 0x1
 #define WRITE_LEN 0x100
 
-uint32_t in_seq[] = {WRITE_REQ, TRANSACTION1, BASE_ADDR, BASE_ADDR, WRITE_LEN};
+uint32_t in_seq[] = {WRITE_REQ, TRANSACTION1, BASE_ADDR, WRITE_LEN};
 
 void write_req(hls::stream<memt_t> &out)
 {
@@ -13,7 +13,7 @@ void write_req(hls::stream<memt_t> &out)
 
 	for (int i = 0; i < 0x20; i++)
 	{
-		for (unsigned int i = 0; i < 5; i++)
+		for (unsigned int i = 0; i < 4; i++)
 
 			out.write(in_seq[i]);
 
