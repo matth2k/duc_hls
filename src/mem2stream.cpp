@@ -19,14 +19,19 @@ bool to_network(hls::stream<ap_uint<RV_ADDR_WIDTH>> &in_cmd_payload_address,
     unsigned int burst_len = 1;
     while (!in_cmd_payload_address.empty() && !in_cmd_payload_write.empty() && burst_len < MAX_BURST_LEN)
     {
-        next_occupied = true;
+
         next_addr = in_cmd_payload_address.read();
         next_write = in_cmd_payload_write.read();
         bool increment = (base_write == next_write) && (next_addr == (base_addr + burst_len));
         if (increment)
+        {
             burst_len++;
+        }
         else
+        {
+            next_occupied = true;
             break;
+        }
     }
 
     // Write the stream to network
@@ -100,10 +105,10 @@ void mem2stream(hls::stream<ap_uint<RV_ADDR_WIDTH>> &in_cmd_payload_address,
     bool next_occupied = false;
     while (1)
     {
-        if (next_occupied || !in_cmd_payload_address.empty())
+        if (next_occupied || (!in_cmd_payload_address.empty() && !in_cmd_payload_write.empty()))
             next_occupied = to_network(in_cmd_payload_address, in_cmd_payload_data, in_cmd_payload_mask, in_cmd_payload_write, out_serialized);
 
-        // if (!in_serialized.empty())
-        //     from_network(in_serialized, out_rsp_valid, out_rsp_payload_data);
+        if (!in_serialized.empty())
+            from_network(in_serialized, out_rsp_valid, out_rsp_payload_data);
     }
 }

@@ -24,6 +24,7 @@ clean:
 %.zip: clean build %_script.tcl
 	source $(SETTINGS); vitis_hls -f $*_script.tcl
 	-cp -r $*_prj/solution1/syn/verilog/* build/verilog
+	cp -r src/*.v build/verilog
 
 build:
 	mkdir $@

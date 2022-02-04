@@ -41,7 +41,7 @@ module SynFIFO (clk,
         else if (rinc && !rempty) rptr <= rptr+1;
     
     assign wptr_1    = wptr + 1;
-    assign rdata_tmp = ex_mem[rptr[ASIZE-1:0]];
+    assign rdata_tmp = ex_mem[rptr[ASIZE-1:0]+1];
     assign rempty    = (rptr == wptr);
     assign wfull     = ((wptr_1[ASIZE-1:0] == rptr[ASIZE-1:0]) && (wptr_1[ASIZE] != rptr[ASIZE])) || wfull_r;
     assign wfull_r   = (wptr[ASIZE-1:0] == rptr[ASIZE-1:0]) && (wptr[ASIZE] != rptr[ASIZE]);
@@ -52,6 +52,8 @@ module SynFIFO (clk,
             end else if (rinc) begin
             $display("passing data %x", rdata_tmp);
             rdata <= rdata_tmp;
+            end else if (rempty & winc) begin
+            rdata <= wdata;
             end else begin
             rdata <= rdata;
         end
