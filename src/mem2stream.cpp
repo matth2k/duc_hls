@@ -56,7 +56,7 @@ bool to_network(hls::stream<ap_uint<RV_ADDR_WIDTH>> &in_cmd_payload_address,
         // drain
         for (unsigned int i = 0; i < burst_len; i++)
         {
-            // TODO: add logic for mask
+            // TODO: Ignore mask, otherwise how do we serialize a mask?
             in_cmd_payload_mask.read();
         }
     }
@@ -78,17 +78,24 @@ void from_network(hls::stream<memt_t> &in_serialized,
                   hls::stream<ap_uint<RV_DATA_WIDTH>> &out_rsp_payload_data)
 {
     memt_t op = in_serialized.read();
-    memt_t transaction_resp = in_serialized.read();
+    
     if (op == WRITE_RESP)
     {
+        memt_t transaction_resp = in_serialized.read();
         out_rsp_valid.write(true);
         out_rsp_payload_data.write(0);
     }
     else if (op == READ_RESP)
     {
         // TODO: the read side
-        out_rsp_valid.write(true);
-        out_rsp_payload_data.write(0);
+        memt_t transaction_resp = in_serialized.read();
+        addr_t base_addr = in_serialized.read();
+	    memt_t length = in_serialized.read();
+        
+        for (unsigned int i = 0; i < length; i++) {
+            out_rsp_valid.write(true);
+            out_rsp_payload_data.write(in_serialized.read());
+        }
     }
 }
 

@@ -15,6 +15,18 @@ memt_t process_write_req(memt_t *arr, hls::stream<memt_t> &in)
 	return transaction;
 }
 
+void process_read_req(memt_t *arr, hls::stream<memt_t> &in, hls::stream<memt_t> &out)
+{
+	addr_t base_addr = in.read();
+	memt_t length = in.read();
+	out.write(base_addr); // Unnecessary but might help with debugging
+	out.write(length);
+	for (unsigned int i = 0; i < length; i++)
+	{
+		out.write(arr[base_addr + i]);
+	}
+}
+
 void stream2mem(memt_t *arr, hls::stream<memt_t> &in, hls::stream<memt_t> &out)
 {
 
@@ -31,11 +43,9 @@ void stream2mem(memt_t *arr, hls::stream<memt_t> &in, hls::stream<memt_t> &out)
 		}
 		else if (op == READ_REQ)
 		{
-			// TODO: the read side
-			//process_read_req(arr, in);
 			out.write(READ_RESP);
-			out.write(0);
+			out.write(in.read()); // Transaction ID
+			process_read_req(arr, in, out);
 		}
 	}
-	// RETURN;
 }

@@ -50,16 +50,7 @@ module hls_bridge #(parameter integer DATA_WIDTH = 32,
     assign io_bus_rsp_payload_data_V_read = ~hls_empty & ~rst;
     assign io_bus_rsp_valid_V_read        = ~hls_empty & ~rst;
     
-    reg value_read;
-    
-    always @(posedge clk) begin
-        if (~rst)
-            value_read <= ~hls_empty;
-        else
-            value_read <= 1'b0;
-    end
-    
-    assign io_bus_rsp_valid        = value_read;
+    assign io_bus_rsp_valid        = ~hls_empty & ~rst;
     assign io_bus_rsp_payload_data = io_bus_rsp_payload_data_V_dout;
     
 endmodule
