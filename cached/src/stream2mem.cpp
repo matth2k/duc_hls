@@ -35,8 +35,9 @@ void stream2mem(memt_t *arr, hls::stream<memt_t> &in, hls::stream<memt_t> &out)
 
 #pragma HLS INTERFACE m_axi port = arr offset = direct bundle = p0
 #pragma HLS interface ap_ctrl_none port = return
-#pragma HLS interface axis register both port=in
-#pragma HLS interface axis register both port=out
+// For PRflow
+// #pragma HLS interface axis register both port=in
+// #pragma HLS interface axis register both port=out
 	while (1)
 	{
 		memt_t op = in.read();
