@@ -16,10 +16,11 @@ void to_network(hls::stream<ap_uint<RV_ADDR_WIDTH>> &in_cmd_payload_address,
     // Addr and wr
     ap_uint<RV_ADDR_WIDTH> base_addr = in_cmd_payload_address.read();
     bool base_write = in_cmd_payload_write.read();
-    
+
     // Burst size and last
-    unsigned int burst_len = in_cmd_payload_size.read() >> 1; // in bytes, so divide by 2
-    in_cmd_payload_last.read(); // Flush last? Haven't seen last be 
+    unsigned int burst_len = in_cmd_payload_size.read();
+    if (base_write && in_cmd_payload_last.read())
+        burst_len = 1;
 
     // Write the output to network
     if (base_write)
@@ -47,9 +48,10 @@ void to_network(hls::stream<ap_uint<RV_ADDR_WIDTH>> &in_cmd_payload_address,
         {
             in_cmd_payload_uncached.read();
         }
-        for (unsigned int i = 0; i < burst_len-1; i++)
+        for (unsigned int i = 0; i < burst_len - 1; i++)
         {
             in_cmd_payload_mask.read();
+            in_cmd_payload_last.read();
         }
     }
     else
@@ -59,7 +61,6 @@ void to_network(hls::stream<ap_uint<RV_ADDR_WIDTH>> &in_cmd_payload_address,
         in_cmd_payload_data.read();
         in_cmd_payload_uncached.read();
     }
-
 }
 
 void from_network(hls::stream<memt_t> &in_serialized,
