@@ -72,8 +72,9 @@ void from_network(hls::stream<memt_t> &in_serialized,
     if (op == WRITE_RESP)
     {
         memt_t transaction_resp = in_serialized.read();
-        out_rsp_payload_data.write(0);
-        out_rsp_payload_last.write(false);
+        // write's don't get responses
+        // out_rsp_payload_data.write(0);
+        // out_rsp_payload_last.write(false);
     }
     else if (op == READ_RESP)
     {
