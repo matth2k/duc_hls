@@ -20,12 +20,13 @@ all: clean $(PACKAGES)
 .PHONY: clean
 clean:
 	-rm -rf build
-	-rm -rf *_prj *.log
+	
 
 %.zip: clean build %_script.tcl
 	source $(SETTINGS); vitis_hls -f $*_script.tcl
-	-cp -r $*_prj/solution1/syn/verilog/* build/verilog
+	+cp -r $*_prj/solution1/syn/verilog/* build/verilog
 	cp -r src/*.v build/verilog
+	-rm -rf *_prj *.log
 
 build:
 	mkdir $@
