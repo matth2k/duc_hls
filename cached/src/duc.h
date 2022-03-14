@@ -11,9 +11,12 @@
 #define RV_DATA_WIDTH 32
 #define MAX_BURST_LEN 8
 
+// Config
+#define FREE_RUNNING
+#undef PRFLOW
+
 typedef uint32_t memt_t;
 typedef uint32_t id_t;
 typedef uint32_t addr_t;
-
 
 #endif

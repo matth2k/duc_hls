@@ -34,12 +34,19 @@ void stream2mem(memt_t *arr, hls::stream<memt_t> &in, hls::stream<memt_t> &out)
 {
 
 #pragma HLS INTERFACE m_axi port = arr offset = direct bundle = p0
+#ifdef FREE_RUNNING
 #pragma HLS interface ap_ctrl_none port = return
-// For PRflow
-// #pragma HLS interface axis register both port=in
-// #pragma HLS interface axis register both port=out
+#endif
+
+#ifdef PRFLOW
+#pragma HLS interface axis register both port = in
+#pragma HLS interface axis register both port = out
+#endif
+
+#ifdef FREE_RUNNING
 	while (1)
 	{
+#endif
 		memt_t op = in.read();
 		if (op == WRITE_REQ)
 		{
@@ -53,5 +60,7 @@ void stream2mem(memt_t *arr, hls::stream<memt_t> &in, hls::stream<memt_t> &out)
 			out.write(in.read()); // Transaction ID
 			process_read_req(arr, in, out);
 		}
+#ifdef FREE_RUNNING
 	}
+#endif
 }
