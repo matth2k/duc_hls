@@ -60,7 +60,9 @@ module hls_bridge #(parameter integer DATA_WIDTH = 32,
     assign io_bus_cmd_payload_write_V_din    = io_bus_cmd_payload_write;
     assign io_bus_cmd_payload_mask_V_din     = io_bus_cmd_payload_mask;
     assign io_bus_cmd_payload_data_V_din     = io_bus_cmd_payload_data;
-    assign io_bus_cmd_payload_address_V_din  = io_bus_cmd_payload_address >> 2; // Access should be aligned
+    // 1. Address should be in words now really. Enforce aligned access
+    // 2. Take off top bit. The top bit is only for linker purposes (dram vs bram)
+    assign io_bus_cmd_payload_address_V_din  = {3'b000, io_bus_cmd_payload_address[DATA_ADDR_WIDTH-2:2]};
     assign io_bus_cmd_payload_uncached_V_din = io_bus_cmd_payload_uncached;
     assign io_bus_cmd_payload_size_V_din     = io_bus_cmd_payload_size;
     assign io_bus_cmd_payload_last_V_din     = io_bus_cmd_payload_last;
