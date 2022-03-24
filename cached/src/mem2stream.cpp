@@ -18,8 +18,8 @@ void to_network(hls::stream<ap_uint<RV_ADDR_WIDTH>> &in_cmd_payload_address,
     bool base_write = in_cmd_payload_write.read();
 
     // Burst size and last
-    unsigned int burst_len = in_cmd_payload_size.read();
-    if (base_write && in_cmd_payload_last.read())
+    unsigned int burst_len = in_cmd_payload_size.read() >> 1; // * 16 / 32 = 1/2 == >> 1
+    if (base_write && in_cmd_payload_last.read()) // if readwrites (this is a guess for now)
         burst_len = 1;
 
     // Write the output to network
