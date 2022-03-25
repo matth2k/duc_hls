@@ -48,7 +48,7 @@ module hls_bridge #(parameter integer DATA_WIDTH = 32,
     wire hls_full           = ~io_bus_cmd_payload_address_V_full_n | ~io_bus_cmd_payload_data_V_full_n | ~io_bus_cmd_payload_mask_V_full_n | ~io_bus_cmd_payload_write_V_full_n | ~io_bus_cmd_payload_uncached_V_full_n | ~io_bus_cmd_payload_size_V_full_n | ~io_bus_cmd_payload_last_V_full_n;
     assign io_bus_cmd_ready = ~hls_full & ~rst;
     
-    wire hls_write                             = io_bus_cmd_valid & ~rst;
+    wire hls_write                             = io_bus_cmd_valid & io_bus_cmd_ready & ~rst;
     assign io_bus_cmd_payload_address_V_write  = hls_write;
     assign io_bus_cmd_payload_data_V_write     = hls_write;
     assign io_bus_cmd_payload_mask_V_write     = hls_write;
