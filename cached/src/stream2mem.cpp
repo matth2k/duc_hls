@@ -23,7 +23,10 @@ memt_t process_write_req(memt_t *arr, hls::stream<memt_t> &in)
 	}
 	for (unsigned int i = 0; i < length; i++)
 	{
-		arr[(base_addr >> 2) + i] = (arr[(base_addr >> 2) + i] & write_mask) | (in.read() & (~write_mask)); // TODO apply mask
+		if (word_type == 2)
+			arr[(base_addr >> 2) + i] = in.read();
+		else
+			arr[(base_addr >> 2) + i] = (arr[(base_addr >> 2) + i] & write_mask) | (in.read() & (~write_mask)); // TODO strb apply mask
 	}
 
 	return transaction;
