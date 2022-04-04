@@ -3,7 +3,7 @@ XILINX_HLS?=/opt/Xilinx/Vitis_HLS/2021.1
 SETTINGS=$(XILINX_HLS)/settings64.sh
 
 #The C functions that make up top modules
-TOP_MODULES=stream2mem write_req mem2stream
+TOP_MODULES=stream2mem mem2stream
 PACKAGES = $(patsubst %,%.zip,$(TOP_MODULES))
 # All CPP source files
 CPP_SOURCES=$(wildcard ./src/*.cpp)

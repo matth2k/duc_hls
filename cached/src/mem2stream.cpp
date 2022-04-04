@@ -16,12 +16,9 @@ void to_network(hls::stream<ap_uint<RV_ADDR_WIDTH>> &in_cmd_payload_address,
     // Addr and wr
     ap_uint<RV_ADDR_WIDTH> base_addr = in_cmd_payload_address.read();
     bool base_write = in_cmd_payload_write.read();
+    in_cmd_payload_last.read();
 
-    // Burst size and last
-    unsigned int burst_len = in_cmd_payload_size.read() >> 1; // * 16 / 32 = 1/2 == >> 1
-    if (base_write && in_cmd_payload_last.read()) // if readwrites (this is a guess for now)
-        burst_len = 1;
-
+    ap_uint<3> word_type = in_cmd_payload_size.read(); // 0 = byte, 1 = half word, 10 = full word
     // Write the output to network
     if (base_write)
     {
@@ -33,26 +30,15 @@ void to_network(hls::stream<ap_uint<RV_ADDR_WIDTH>> &in_cmd_payload_address,
     }
     out_serialized.write(transaction_id++);
     out_serialized.write(base_addr);
-    out_serialized.write(burst_len);
+    out_serialized.write(1); // Only support of burst 1 for now
+    out_serialized.write(word_type);
     // write contents and draining FIFOs
     if (base_write)
     {
         out_serialized.write(in_cmd_payload_mask.read());
-        // Assume all the masks are the same
-        for (unsigned int i = 0; i < burst_len; i++)
-        {
-            out_serialized.write(in_cmd_payload_data.read());
-        }
+        out_serialized.write(in_cmd_payload_data.read());
         // drain
-        for (unsigned int i = 0; i < burst_len; i++)
-        {
-            in_cmd_payload_uncached.read();
-        }
-        for (unsigned int i = 0; i < burst_len - 1; i++)
-        {
-            in_cmd_payload_mask.read();
-            in_cmd_payload_last.read();
-        }
+        in_cmd_payload_uncached.read();
     }
     else
     {
@@ -73,12 +59,10 @@ void from_network(hls::stream<memt_t> &in_serialized,
     {
         memt_t transaction_resp = in_serialized.read();
         // write's don't get responses
-        // out_rsp_payload_data.write(0);
-        // out_rsp_payload_last.write(false);
     }
     else if (op == READ_RESP)
     {
-        // TODO: the read side
+
         memt_t transaction_resp = in_serialized.read();
         addr_t base_addr = in_serialized.read();
         memt_t length = in_serialized.read();

@@ -7,12 +7,23 @@ memt_t process_write_req(memt_t *arr, hls::stream<memt_t> &in)
 	id_t transaction = in.read();
 	addr_t base_addr = in.read();
 	memt_t length = in.read();
-	// Todo consume the mask
-	ap_uint<4> mask = in.read();
-
+	ap_uint<3> word_type = in.read();
+	ap_uint<4> mask = in.read(); // mask to apply to the input
+	memt_t write_mask = 0;		 // mask to apply to DRAM
+	if (word_type == 0)
+	{
+		write_mask = ~(0xff << ((base_addr % 4) * 8));
+	}
+	else if (word_type == 1)
+	{
+		if ((base_addr & 0x3) == 0)
+			write_mask = 0xff00;
+		else
+			write_mask = 0x00ff;
+	}
 	for (unsigned int i = 0; i < length; i++)
 	{
-		arr[base_addr + i] = in.read();
+		arr[(base_addr >> 2) + i] = (arr[(base_addr >> 2) + i] & write_mask) | in.read(); // TODO apply mask
 	}
 
 	return transaction;
@@ -22,11 +33,12 @@ void process_read_req(memt_t *arr, hls::stream<memt_t> &in, hls::stream<memt_t> 
 {
 	addr_t base_addr = in.read();
 	memt_t length = in.read();
+	ap_uint<3> word_type = in.read();
 	out.write(base_addr); // Unnecessary but might help with debugging
 	out.write(length);
 	for (unsigned int i = 0; i < length; i++)
 	{
-		out.write(arr[base_addr + i]);
+		out.write(arr[(base_addr >> 2) + i]);
 	}
 }
 
