@@ -12,7 +12,7 @@ memt_t process_write_req(memt_t *arr, hls::stream<memt_t> &in)
 	memt_t write_mask = 0;		 // mask to apply to DRAM
 	if (word_type == 0)
 	{
-		write_mask = ~(0xff << ((base_addr % 4) * 8));
+		write_mask = ~(0xff << ((base_addr & 3) * 8));
 	}
 	else if (word_type == 1)
 	{
@@ -23,7 +23,7 @@ memt_t process_write_req(memt_t *arr, hls::stream<memt_t> &in)
 	}
 	for (unsigned int i = 0; i < length; i++)
 	{
-		arr[(base_addr >> 2) + i] = (arr[(base_addr >> 2) + i] & write_mask) | in.read(); // TODO apply mask
+		arr[(base_addr >> 2) + i] = (arr[(base_addr >> 2) + i] & write_mask) | (in.read() & (~write_mask)); // TODO apply mask
 	}
 
 	return transaction;
