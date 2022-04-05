@@ -48,14 +48,17 @@ void process_read_req(memt_t *arr, hls::stream<memt_t> &in, hls::stream<memt_t> 
 void stream2mem(memt_t *arr, hls::stream<memt_t> &in, hls::stream<memt_t> &out)
 {
 
-#pragma HLS INTERFACE m_axi port = arr offset = direct bundle = p0
+
 #ifdef FREE_RUNNING
-#pragma HLS interface ap_ctrl_none port = return
+// #pragma HLS interface ap_ctrl_none port = return
 #endif
 
 #ifdef PRFLOW
+#pragma HLS INTERFACE m_axi port = arr offset = direct bundle = p0
 #pragma HLS interface axis register both port = in
 #pragma HLS interface axis register both port = out
+#else
+#pragma HLS INTERFACE m_axi port = arr offset = direct bundle = p0
 #endif
 
 #ifdef FREE_RUNNING

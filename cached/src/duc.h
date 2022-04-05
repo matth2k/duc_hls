@@ -13,7 +13,7 @@
 
 // Config
 #define FREE_RUNNING
-#undef PRFLOW
+#define PRFLOW
 
 typedef uint32_t memt_t;
 typedef uint32_t id_t;

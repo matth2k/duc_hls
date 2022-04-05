@@ -88,6 +88,10 @@ void mem2stream(hls::stream<ap_uint<RV_ADDR_WIDTH>> &in_cmd_payload_address,
                 hls::stream<memt_t> &out_serialized)
 {
 #pragma HLS interface ap_ctrl_none port = return
+#ifdef PRFLOW
+#pragma HLS interface axis register both port = in_serialized
+#pragma HLS interface axis register both port = out_serialized
+#endif
     while (1)
     {
         if (!in_cmd_payload_address.empty() && !in_cmd_payload_write.empty())
